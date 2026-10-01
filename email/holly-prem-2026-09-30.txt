@@ -1,0 +1,16 @@
+Subject: PREM in the GIAMIP protocol
+
+Hi Holly,
+
+Hope this finds you well. Mark, Will and I would like to raise something about the experiments that use PREM (Exp01, Exp02 and Exp05 to Exp07, and any group that chooses PREM elsewhere).
+
+The protocol names PREM but does not provide a file, so each group will use its own version. Most of the differences between versions are small (anisotropic PREM, frequency correction etc). The one that matters is density. In PREM as published, density increases upward in the upper mantle down to about 220 km. In a compressible model, that layer is gravitationally unstable. Given enough time or a low enough viscosity, it starts to convect instead of relaxing (Vermeersen and Mitrovica, 2000). Incompressible models are not affected.
+
+Because the protocol leaves compressibility open, some groups will see this and others will not, and the difference will show up in the spread as if it were a real model difference. With the protocol viscosities the effect is small but visible. It gets much stronger at the low viscosities the optional experiments encourage. We have already seen it in G-ADOPT, where a compressible model with a weak mantle developed a growing flow that never settled.
+
+The simplest fix would be for GIAMIP to provide one reference PREM table with the density adjusted to be stable wherever the mantle flows. Everything else stays as in PREM. This is not a new idea on our side: a PREM modified in this way has been used widely since the issue was found, for example by Jerry's group. In our tests it removes the instability and changes the results by well under a per cent over a glacial cycle. If that is too much at this stage, asking groups to state in the model report which PREM they used and how they treat its density would still let us separate the effect later.
+
+We already have such a table and are happy to share it, or to talk it through on a call.
+
+Best,
+Sia

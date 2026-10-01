@@ -1,0 +1,12 @@
+# Outputs: the scripts regenerate them.
+*.npz
+*.npy
+*.png
+# METHOD.md shows this figure, so git tracks it.
+!prem_stable_fit.png
+!sources/*.png
+__pycache__/
+# Published papers and the scan of Table I: kept here, not redistributed.
+sources/
+# Rendered from METHOD.md; the Markdown file is the source.
+METHOD.pdf
