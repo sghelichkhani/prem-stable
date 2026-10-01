@@ -89,13 +89,16 @@ moduli and a new density, both speeds change by about $-\tfrac{1}{2}\,
 \Delta\rho/\rho$. The $V_P$ and $V_S$ in `PREM-stable.csv` are these new
 speeds. This table therefore, is purely for the purposes of GIA modelling where the target is for measure the Earth's response to external load.
 
-Here we also note that we change the density only between the surface and 670 km. Below 670 km, PREM
-is close to adiabatic, and it stays unchanged. In cases where $ e > 0 $ we note that the assumed higher viscosities for the lower mantle would make this insignificant.
+Here we also note that we change the density of the crust and the whole mantle, from the surface to the
+core-mantle boundary at 2891 km. Below 670 km, PREM is close to adiabatic, with $e$ up to 0.029, and the
+change there is a few kg/m³. We still include it, because a lower mantle with a low viscosity can show
+the instability over a long run. With the correction, every layer of the crust and the mantle is stable.
+The core stays PREM.
 
 ### The rule
 
-The density at the nodes between the surface and 670 km is the solution of a
-least-squares problem. It is the density closest to PREM,
+The density at the nodes between the surface and the core-mantle boundary is
+the solution of a least-squares problem. It is the density closest to PREM,
 
 $$\min \sum_i w_i \left(\rho_i - \rho_i^{\mathrm{PREM}}\right)^2,$$
 
@@ -111,9 +114,10 @@ conditions apply.
 2. At every discontinuity, the density below is at least the density above.
    An inverted jump between two flowing layers gives a mode that grows about
    ten times faster than the same density excess spread over a layer.
-3. The mass between the surface and 670 km is PREM's. The total mass of the
-   Earth, the surface gravity and the gravity below 670 km therefore do not
-   change.
+3. The mass of the crust and the mantle is PREM's. The total mass of the
+   Earth, the surface gravity and the gravity in the core therefore do not
+   change. One condition covers the whole range, so mass can move between the
+   upper and the lower mantle.
 
 Condition 1 contains $g$, and $g$ depends on the density. We solve the problem
 in a loop. Gravity comes from the current density, the least-squares problem
@@ -139,25 +143,31 @@ super-adiabatic ($e = 1$). The correction changes the crust by about
 
 ![PREM and PREM-stable](prem_stable_fit.png)
 
-*a. Density of PREM and PREM-stable. b. The stability measure $e$ per interval.
-The shaded half is unstable. c. Density change. d. Change of $V_P$ and $V_S$,
-which is the same for both because the moduli are fixed. e. Gravity change.
-Below the dashed line at 670 km, the two models are equal.*
+*Left: the stability measure $e$ per interval for PREM and PREM-stable. The
+shaded half is unstable. Right: the density adjustment, PREM-stable minus PREM.
+The top row shows 0 to 1000 km and the bottom row 1000 to 2891 km. The two rows
+have different horizontal scales.*
 
 | Depth (km) | Density change (kg/m³) |
 |---|---|
 | 0 to 24.4, crust | −9 to +10 |
 | 24.4 to 220 | −109 at 24.4 km, +81 at 220 km |
-| 220 to 400 | +5 to +32 |
-| 400 to 600 | +0.5, and down to −12 between 590 and 600 km |
+| 220 to 400 | +4 to +32 |
+| 400 to 600 | +0.3, and down to −12 between 590 and 600 km |
 | 600 to 670 | −12 to +16 |
+| 670 to 771 | −7 to −5 |
+| 771 to 2741 | −5 to +3 |
+| 2741 to 2891, D'' | +2 to +2.5 |
 
-The largest $e$ between the surface and 670 km is 5e-10. In PREM it is 1.13.
-The density jump at 220 km becomes zero, and the jump at 400 km decreases from
-180 to 149 kg/m³. The lid between 24.4 and 80 km becomes 1.7 to 3.2 per cent
-lighter. The total mass and the surface gravity are PREM's. Gravity changes by
-at most 5.4e-3 m/s², at about 140 km depth. $V_P$ and $V_S$ change by −1.2 to
-+1.7 per cent.
+The largest $e$ in the crust and the mantle is 2e-9. In PREM it is 1.13.
+The density jump at 220 km becomes zero, the jump at 400 km decreases from
+180 to 149 kg/m³, and the jump at 670 km decreases from 389 to 366 kg/m³. The
+lid between 24.4 and 80 km becomes 1.7 to 3.2 per cent lighter. Between about
+2350 and 2891 km, PREM is already stable, with $e$ down to −0.011. There the
+correction gives the adiabatic gradient, $e = 0$, which is the stable density
+closest to PREM after the change above it. The total mass and the surface
+gravity are PREM's. Gravity changes by at most 5.5e-3 m/s², at about 140 km
+depth. $V_P$ and $V_S$ change by −1.2 to +1.7 per cent.
 
 ## How to use the files
 
@@ -184,8 +194,8 @@ so they can be compared row by row.
   equal.
 - The nodes are at most 10 km apart from the surface to the core-mantle
   boundary, and at most 100 km apart in the core.
-- Between the surface and 670 km, interpolate the density linearly between
-  nodes. The gravity column is exact for that density. If your code computes
+- Between the surface and the core-mantle boundary, interpolate the density
+  linearly between nodes. The gravity column is exact for that density. If your code computes
   gravity from the density with the trapezoid rule, the result differs from
   the column by at most 3e-5 of its value.
 - Use $\kappa$ and $\mu$ from the file. If you read $V_P$ and $V_S$, read them

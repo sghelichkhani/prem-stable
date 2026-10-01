@@ -19,13 +19,15 @@ radius is a declared interface. Some region boundaries (80 km, 600 km, 771 km,
 
 What is changed
 ---------------
-Only the density between the surface and 670 km depth. In that range PREM is
-super-adiabatic in the crust (constant density in each layer, e = 1), between
-24.4 and 220 km (density increases upward, e = 1.13), between 220 and 400 km
-(e = 0.2) and between 600 and 670 km (e = 0.63). The stable transition zone
-between 400 and 600 km is inside the range, so that the fit can move it if the
-constraints need that. It carries no constraint of its own beyond staying
-stable. Below 670 km the model is PREM exactly.
+Only the density of the crust and the mantle, between the surface and the
+core-mantle boundary at 2891 km depth. In that range PREM is super-adiabatic in
+the crust (constant density in each layer, e = 1), between 24.4 and 220 km
+(density increases upward, e = 1.13), between 220 and 400 km (e = 0.2), between
+600 and 670 km (e = 0.63) and in parts of the lower mantle (e up to 0.029).
+The stable transition zone between 400 and 600 km is inside the range, so that
+the fit can move it if the constraints need that. It carries no constraint of
+its own beyond staying stable. The core is PREM exactly. The outer core is a
+fluid without shear strength, and GIA codes treat it separately.
 
 The range includes the lithosphere and the crust. A table that is stable only
 below a rigid lid is stable only for models whose lid is at least that thick,
@@ -49,10 +51,13 @@ least-squares sense, subject to:
    (`lovejx.lovenumbers.stratification.interval_measure`), so the check passes
    on the table exactly as it is written.
 2. No inverted discontinuity: at every region boundary in the range the density
-   below is at least the density above. At 670 km the lower mantle, which is
-   PREM, must be at least as dense as the layer above it.
-3. The mass between the surface and 670 km is PREM's. The total mass, and
-   gravity everywhere below 670 km and at the surface, are therefore PREM's.
+   below is at least the density above. At the core-mantle boundary the core,
+   which is PREM, must be at least as dense as the base of the mantle. With
+   PREM's core this condition is far from active.
+3. The mass between the surface and the core-mantle boundary is PREM's. One
+   constraint covers the whole range, so mass can move between the upper and
+   the lower mantle. The total mass, the surface gravity and the gravity in the
+   core are therefore PREM's.
 
 Condition 1 is non-linear in the density because of rho^2 and g. It is solved by
 fixed-point iteration: the coefficients rho_m g_m / kappa_m come from the
@@ -85,7 +90,7 @@ import prem1981 as P
 
 HERE = pathlib.Path(__file__).resolve().parent
 G = 6.6743e-11              # CODATA 2018, m^3 kg^-1 s^-2
-R_BOT_KM = P.A_KM - 670.0   # 5701 km, bottom of the adjusted range
+R_BOT_KM = 3480.0          # core-mantle boundary radius, bottom of the adjusted range
 STEP_MANTLE_KM = 10.0       # largest node spacing from the surface to the CMB
 STEP_CORE_KM = 100.0        # largest node spacing in the core
 R_CMB_KM = 3480.0
@@ -135,8 +140,9 @@ def prem_nodes():
     mu = rho * vs**2
     kappa = rho * vp**2 - 4.0 * mu / 3.0
 
-    # Adjusted nodes: every node at or above 670 km depth, except the node at
-    # 670 km that belongs to the lower mantle, which stays PREM.
+    # Adjusted nodes: every node of the crust and the mantle. Of the two nodes
+    # at the core-mantle boundary, the one that belongs to the outer core stays
+    # PREM.
     adj = r_km >= R_BOT_KM - 1e-9
     adj &= ~((np.abs(r_km - R_BOT_KM) < 1e-9) & (reg == P.region_of(R_BOT_KM, "below")))
     return dict(r=r_km * 1e3, rho=rho, vp=vp, vs=vs, kappa=kappa, mu=mu, reg=reg, adj=adj)
@@ -249,8 +255,9 @@ def fit(model, tol=2e-5, max_iter=30):
     finite = np.where(dr > 0)[0]
     jumps = np.where(dr == 0)[0]
 
-    # The lower mantle node at 670 km is fixed at PREM, just below the range.
-    rho_lm_top = rho_p[idx[0] - 1]
+    # The outer-core node at the core-mantle boundary, just below the range,
+    # is fixed at PREM.
+    rho_core_top = rho_p[idx[0] - 1]
 
     rho = rho_p.copy()
     for it in range(max_iter):
@@ -277,10 +284,10 @@ def fit(model, tol=2e-5, max_iter=30):
             B[np.arange(jumps.size), jumps] = 1.0
             B[np.arange(jumps.size), jumps + 1] = -1.0
             cons.append(LinearConstraint(B, 0.0, np.inf))
-        # 670 km: the lowest unknown (bottom of the transition zone) must not
-        # be denser than the lower mantle below it.
-        lo670 = np.zeros((1, n)); lo670[0, 0] = 1.0
-        cons.append(LinearConstraint(lo670, -np.inf, rho_lm_top))
+        # Core-mantle boundary: the lowest unknown (base of the mantle) must
+        # not be denser than the core below it.
+        lo_cmb = np.zeros((1, n)); lo_cmb[0, 0] = 1.0
+        cons.append(LinearConstraint(lo_cmb, -np.inf, rho_core_top))
         # Mass of the range equal to PREM's.
         cons.append(LinearConstraint(w[None, :] / mass_prem, 1.0, 1.0))
 
@@ -328,12 +335,14 @@ def main():
     _, e_old = stability_e(r, rho_p, kappa, g_p, adj)
     d = rho - rho_p
     print(f"nodes: {r.size}, adjusted: {adj.sum()}")
-    print(f"density change in 0-670 km: {d[adj].min():+.2f} to {d[adj].max():+.2f} kg/m^3")
-    print(f"e in 0-670 km: PREM max {e_old.max():+.3f}, new max {e_new.max():+.2e}")
+    print(f"density change in the crust and mantle: {d[adj].min():+.2f} to {d[adj].max():+.2f} kg/m^3")
+    lm = adj & (r / 1e3 < P.A_KM - 670.0 - 1e-9)
+    print(f"density change below 670 km: {d[lm].min():+.2f} to {d[lm].max():+.2f} kg/m^3")
+    print(f"e in the crust and mantle: PREM max {e_old.max():+.3f}, new max {e_new.max():+.2e}")
     print(f"total mass: PREM {m_p[-1]:.6e}, new {m[-1]:.6e}, relative change {(m[-1]-m_p[-1])/m_p[-1]:.1e}")
     print(f"surface gravity: PREM {g_p[-1]:.6f}, new {g[-1]:.6f} m/s^2")
     print(f"largest gravity change: {np.max(np.abs(g - g_p)):.2e} m/s^2")
-    # Density jumps at the region boundaries in the range, and at 670 km.
+    # Density jumps at the region boundaries in the range, and at the CMB.
     for k, (lo, hi, name, *_rest) in enumerate(P.REGIONS):
         if lo < R_BOT_KM - 1e-9:
             continue

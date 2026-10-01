@@ -138,6 +138,10 @@ down.
 crust included. Conserve the mass of 0 to 670 km. Keep the lower mantle as
 PREM. Keep the bulk and shear moduli as PREM.
 
+The lower limit of 670 km in this entry was replaced later on 2026-10-01 by
+the entry "Extend the adjustment to the whole mantle". The numbers below are
+for the range 0 to 670 km.
+
 **Reason.** The 60 km table is stable only for models whose lid is at least
 60 km thick and does not flow. That is not true for every model that will use
 the table. In a 3D model the lithosphere is thinner than 60 km in some places,
@@ -206,12 +210,61 @@ outward, in SI units. Columns: radius_m, depth_km, region (index into
 attenuation (Q) of Table I is not in `prem1981.py` and is not in the files.
 GIA codes do not use it.
 
+## 2026-10-01: Extend the adjustment to the whole mantle
+
+**Decision.** Apply the rule of 2026-09-30 between the surface and the
+core-mantle boundary (2891 km), D'' included. Conserve the mass of the crust
+and the mantle with one constraint, so mass can move between the upper and the
+lower mantle. Keep the core as PREM. Keep the bulk and shear moduli as PREM.
+
+**Reason.** Below 670 km PREM is slightly super-adiabatic (e up to 0.029,
+excess up to 9 kg/m^3). The lovejx threshold of e = 0.05 accepts this, but that
+threshold was set for lower-mantle viscosities of 5e20 to 5e21 Pa s. A lower
+mantle with a lower viscosity can show the instability over a long run. With
+the change, the table is stable in every layer of the crust and the mantle.
+The core is excluded: the outer core is a fluid without shear strength, and
+GIA codes treat it separately.
+
+**Alternatives.** Two mass constraints, one for 0 to 670 km and one for 670 to
+2891 km, give densities that differ from the single constraint by less than
+0.5 kg/m^3 everywhere. A D'' kept as PREM was rejected, so that the whole
+mantle satisfies one rule.
+
+**Result.** From `build_prem_stable.py`. Above 670 km the density moves by
+less than 0.5 kg/m^3 from the 0 to 670 km fit.
+
+| Depth (km) | Density change (kg/m^3) |
+|---|---|
+| 0 to 24.4 | -9.3 to +9.9 |
+| 24.4 to 220 | -109 at 24.4 km, +81 at 220 km |
+| 220 to 400 | +4.4 to +32 |
+| 400 to 600 | +0.3, except down to -12 between 590 and 600 km |
+| 600 to 670 | -12 to +16 |
+| 670 to 771 | -6.7 to -5.2 |
+| 771 to 2741 | -5.2 to +3.2 |
+| 2741 to 2891 | +2.3 to +2.5 |
+
+- The largest e in the crust and the mantle is 1.9e-9. PREM's is +1.13.
+- The jump at 670 km is 366 kg/m^3 (PREM 389). The jump at the core-mantle
+  boundary is 4335 kg/m^3 (PREM 4337).
+- The total mass changes by 1e-15 of itself. Surface gravity and gravity in
+  the core do not change. Gravity changes by at most 5.5e-3 m/s^2, at 140 km,
+  and by 1.4e-4 m/s^2 at 670 km.
+- V_P and V_S change by -1.2 to +1.7 per cent.
+- `check_stratification` of lovejx, with every solid node marked as flowing,
+  gives "stable" for PREM-stable.csv, with the largest judged e 1.9e-9, and no
+  inverted jumps.
+- Between about 2350 and 2891 km PREM is stable (e down to -0.011). The fit
+  gives the adiabatic gradient there (e = 0). The reason is the objective:
+  after the change above, the adiabat is the stable profile closest to PREM.
+
+**Figure.** `plot_fit.py` now shows two quantities only, e and the density
+adjustment, in two depth ranges: 0 to 1000 km and 1000 to 2891 km. Each range
+has its own horizontal scale, so the lower-mantle change of a few kg/m^3 is
+visible.
+
 ## Open items
 
-- **The lower mantle.** Between 670 and 2000 km, PREM is slightly super-adiabatic
-  (e up to 0.029, excess 9 kg/m^3). It is left as PREM now. Adjusting it changes
-  the density by a few kg/m^3. The table could then state that every flowing
-  layer is stable. Recommendation: adjust it.
 - **The cost in the Love numbers.** Run lovejx on PREM.csv and PREM-stable.csv
   with the GIAMIP viscosity profiles. Compare the elastic k and h at high degree
   and the response over a glacial cycle. The draft email states "well under a

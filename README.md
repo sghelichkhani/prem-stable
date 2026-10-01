@@ -34,7 +34,7 @@ The evidence:
 | `build_prem_stable.py` | Fits the stable density and writes `PREM.csv` and `PREM-stable.csv` |
 | `PREM.csv` | PREM on the output node table, centre outward, SI units |
 | `PREM-stable.csv` | The stable PREM on the same nodes |
-| `plot_fit.py` | Plots every changed quantity of the two CSV files, `prem_stable_fit.png` |
+| `plot_fit.py` | Plots e and the density adjustment of the two CSV files, `prem_stable_fit.png` |
 | `plot_prem_stable.py` | Plots the older lovejx PREM-stable against `prem.nd`, `prem_vs_prem_stable.png` |
 | `METHOD.md` | Why and how PREM is changed, and how to use the files. For the GIAMIP groups |
 | `DECISIONS.md` | Every decision, with the date, the reason and the numbers |
@@ -58,7 +58,7 @@ commands from this directory.
 
 ## Status
 
-PREM-stable.csv is stable from the surface to 670 km, and below 670 km it is
-PREM. The columns are radius_m, depth_km, region, rho_kg_m3, vp_m_s, vs_m_s,
+PREM-stable.csv is stable from the surface to the core-mantle boundary. The
+core is PREM. The columns are radius_m, depth_km, region, rho_kg_m3, vp_m_s, vs_m_s,
 kappa_Pa, mu_Pa and g_m_s2. Every region boundary has two rows at one radius,
 the lower side first. `DECISIONS.md` lists the open items.
