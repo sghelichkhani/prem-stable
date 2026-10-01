@@ -141,12 +141,11 @@ super-adiabatic ($e = 1$). The correction changes the crust by about
 
 ## The result
 
-![PREM and PREM-stable](prem_stable_fit.png)
+![Density of PREM and PREM-stable](prem_density.png)
 
-*Left: the stability measure $e$ per interval for PREM and PREM-stable. The
-shaded half is unstable. Right: the density adjustment, PREM-stable minus PREM.
-The top row shows 0 to 1000 km and the bottom row 1000 to 2891 km. The two rows
-have different horizontal scales.*
+*Density of PREM as published (blue) and of PREM-stable (orange). a. The crust
+and the mantle, 0 to 2891 km. b. The top 700 km, where the change is largest.
+Where the two models agree, the orange line lies on the blue line.*
 
 | Depth (km) | Density change (kg/m³) |
 |---|---|

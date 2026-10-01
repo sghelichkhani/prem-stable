@@ -34,6 +34,7 @@ The evidence:
 | `build_prem_stable.py` | Fits the stable density and writes `PREM.csv` and `PREM-stable.csv` |
 | `PREM.csv` | PREM on the output node table, centre outward, SI units |
 | `PREM-stable.csv` | The stable PREM on the same nodes |
+| `plot_density.py` | Plots the density of PREM and PREM-stable, `prem_density.png`. The figure in `METHOD.md` |
 | `plot_fit.py` | Plots e and the density adjustment of the two CSV files, `prem_stable_fit.png` |
 | `plot_prem_stable.py` | Plots the older lovejx PREM-stable against `prem.nd`, `prem_vs_prem_stable.png` |
 | `METHOD.md` | Why and how PREM is changed, and how to use the files. For the GIAMIP groups |
@@ -51,7 +52,7 @@ commands from this directory.
    be below 1e-5 g/cm^3.
 2. Run `build_prem_stable.py`. It takes about 2 seconds. It prints the density
    change, the stability measure, the mass and the jumps.
-3. Run `plot_fit.py`.
+3. Run `plot_density.py` and `plot_fit.py`.
 
 `check_prem1981.py` needs ObsPy and a checkout of lovejx at
 `~/Workplace/lovejx`. The build needs only NumPy and SciPy.
