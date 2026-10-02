@@ -29,7 +29,8 @@ attenuation and no viscosity.
 | `PREM.csv` | PREM from the Table I polynomials |
 | `PREM-stable.csv` | The stable model, on the same nodes as `PREM.csv` |
 | `METHOD.md` | The reasons, the method, the result and the column format |
-| `prem_density.png` | The density of the two models |
+| `VM5i_Spada_Melini_2019.csv` | The 11-layer model VM5i, for comparison only |
+| `prem_density.png` | The density of PREM, PREM-stable and VM5i |
 | `prem1981.py` | The Table I coefficients and a function that evaluates them |
 | `build_prem_stable.py` | Calculates the stable density and writes both CSV files |
 | `plot_density.py` | Plots `prem_density.png` |
@@ -53,6 +54,22 @@ attenuation and no viscosity.
   regions has two rows at the same radius. The fit is done on these nodes, so
   the stability condition holds for the file as it is written.
 
+## Comparison model
+
+`VM5i_Spada_Melini_2019.csv` is the Earth model VM5i of Spada and Melini
+(2019), Table 2. It has 11 layers of constant density, rigidity and viscosity,
+and it is the test model of the sea-level code SELEN4. The values were typed
+from Table 2 and checked against the published PDF. The paper is published
+under the Creative Commons Attribution 4.0 License.
+
+The rows go from the surface down. Radius and depth are in km and density is
+in kg/m³. Rigidity is in units of 1e11 Pa and viscosity in units of 1e21 Pa s.
+The viscosity of the elastic lithosphere is written `inf`. The depth columns
+are 6371 km minus the radii.
+
+`prem_density.png` shows VM5i for comparison. No file in this repository is
+built from it.
+
 ## Build the files
 
 The scripts need Python 3, NumPy, SciPy and Matplotlib. Run them from this
@@ -68,7 +85,12 @@ stability measure, the total mass, the surface gravity and the density jumps,
 and it writes `PREM.csv` and `PREM-stable.csv`. `plot_density.py` writes
 `prem_density.png`.
 
-## Reference
+## References
 
 Dziewonski, A. M. and Anderson, D. L. (1981). Preliminary reference Earth
 model. *Physics of the Earth and Planetary Interiors* 25, 297–356.
+
+Spada, G. and Melini, D. (2019). SELEN4 (SELEN version 4.0): a Fortran program
+for solving the gravitationally and topographically self-consistent sea-level
+equation in glacial isostatic adjustment modeling. *Geoscientific Model
+Development* 12, 5055–5075. https://doi.org/10.5194/gmd-12-5055-2019

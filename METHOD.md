@@ -142,11 +142,16 @@ super-adiabatic ($e = 1$). The correction changes the crust by about
 
 ## The result
 
-![Density of PREM and PREM-stable](prem_density.png)
+![Density of PREM, PREM-stable and VM5i](prem_density.png)
 
-*Density of PREM as published (blue) and of PREM-stable (orange). a. The crust
-and the mantle, 0 to 2891 km. b. The top 700 km, where the change is largest.
-Where the two models agree, the orange line lies on the blue line.*
+*Density of PREM as published (blue), of PREM-stable (orange) and of VM5i
+(grey; Spada and Melini, 2019, Table 2). a. The crust and the mantle, 0 to
+2891 km. b. The top 700 km, where the change is largest. Where PREM and
+PREM-stable agree, the orange line lies on the blue line. VM5i averages PREM
+over 11 layers of constant density. Below 220 km its density is 0.4 to 0.8 per
+cent lower than PREM. A layer of constant density is stable only in an
+incompressible model. In a compressible model it is steeper than the adiabatic
+gradient ($e = 1$), so VM5i is not stable in a compressible code.*
 
 | Depth (km) | Density change (kg/m³) |
 |---|---|
@@ -220,6 +225,11 @@ compressible earth models. *Geophysical Journal International* 235, 2231–2256.
 
 Plag, H.-P. and Jüttner, H.-U. (1995). Rayleigh–Taylor instabilities of a
 self-gravitating Earth. *Journal of Geodynamics* 20, 267–288.
+
+Spada, G. and Melini, D. (2019). SELEN4 (SELEN version 4.0): a Fortran program
+for solving the gravitationally and topographically self-consistent sea-level
+equation in glacial isostatic adjustment modeling. *Geoscientific Model
+Development* 12, 5055–5075. https://doi.org/10.5194/gmd-12-5055-2019
 
 Vermeersen, L. L. A. and Mitrovica, J. X. (2000). Gravitational stability of
 spherical self-gravitating relaxation models. *Geophysical Journal
