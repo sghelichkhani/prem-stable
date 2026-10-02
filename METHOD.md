@@ -1,184 +1,160 @@
 # A gravitationally stable PREM for GIA models
 
-This note explains why we changed the density of PREM, how we changed it, and
-how to use the two files `PREM.csv` and `PREM-stable.csv`. It is written for the
-GIAMIP modelling groups.
+This note explains the rationale and methods for producing a gravitationally stable PREM profile for use in
+glacial isostatic adjustment (GIA) modelling studies. We provide both the original profile `PREM.csv` and
+a preferred modified version `PREM-stable.csv` It has been developed as part of the GIAMIP modelling efforts
+and, in addition to density, all other parameters ($g$, $V_P$, $V_S$, $\kappa$, and $\mu$) should also be
+read in from the revised profile.
 
-## Why PREM needs a change
+## Why is there an issue?
 
-GIAMIP prescribes PREM (Dziewonski and Anderson, 1981) as the elastic structure
-of several experiments. PREM's density comes from a fit to seismic and
-free-oscillation data. Nothing in that fit makes the density stable in a model
-where the mantle flows. The bottom line is, as the literature has shown (see cited papers), in some depth ranges it is not stable.
+Self-gravitating GIA models require the viscoelastic properties and density of the solid Earth to be prescribed,
+and 1D elastic and density structure have commonly been taken from PREM (Dziewonski & Anderson, 1981), although
+several alternative published radial profiles are also used. PREM's elastic moduli and density are obtained from
+fitting body wave and free-oscillation data. However, there is no requirement in its construction for the density
+profile to be gravitationally stable (and indeed, the mantle convects vigorously over geological timescales).
+This fact can therefore result in gravitational instabilities occurring in GIA models that are undesirable 
+(Plag & Jüttner, 1995; Vermeersen & Mitrovica, 2000). In particular, when we consider a parcel of rock during
+unloading that moves upwards compared to it surroundings, if it's density difference (i.e., buoyancy) with respect
+to the new surroundings increases (for example, where PREM prescribes a negative density gradient with depth),
+then it will want to rise further, and so on, leading to a runaway overturn. In practice, this means that if we
+perturb such an Earth model during GIA loading cycles, it will not return to it's original structure.
 
 ### The stability condition
 
-The reference Earth is in hydrostatic equilibrium. That is the change in hydrostatic pressure with radius is,
+The reference Earth in GIA is considered to be in hydrostatic equilibrium, such that the change in hydrostatic
+pressure with radius is,
 
 $$\frac{dP}{dr} = -\rho g,$$
 
-with $r$ the radius, $P$ the pressure, $\rho$ the density and $g$ gravity.
+where $r$ is the radius, $P$ the pressure, $\rho$ the density, and $g$ the gravitational acceleration. When a small
+parcel of rock moves upwards, the pressure on it decreases causing it to
+expand. If the parcel exchanges no heat with its surroundings (i.e., an adiabatic process), the bulk
+modulus $\kappa$ controls this expansion, $d\rho/\rho = dP/\kappa$. Referring to the
+hydrostatic equilibrium equation, the density of the parcel therefore changes with radius as
 
-Move a small parcel of rock upward. The pressure on it decreases and it
-expands. If the parcel exchanges no heat with its surroundings (adiabatic process), the bulk
-modulus $\kappa$ sets the expansion, $d\rho/\rho = dP/\kappa$. With the
-hydrostatic equation, the density of the parcel changes with radius as
+$$\left(\frac{d\rho}{dr}\right)_{\mathrm{ad}} = -\frac{\rho^2 g}{\kappa},$$
 
-$$\left(\frac{d\rho}{dr}\right)_{\mathrm{ad}} = -\frac{\rho^2 g}{\kappa}.$$
+which is the Adams–Williamson equation (Williamson and Adams, 1923). By comparing this adiabatic density
+gradient with the density gradient of PREM at the same depth, we see that when the density of the Earth model
+decreases upwards faster than the adiabatic density gradient, the parcel becomes denser than its
+new surroundings and will sink back down (i.e., the layer is stable). However, if the density of the
+Earth model decreases more slowly (or increases upward) compared to the adiabatic density gradient, the parcel
+becomes more buoyant and continues to rise (i.e., the layer is unstable). A metric for is stability can be defined as
 
-This is the Adams–Williamson gradient (Williamson and Adams, 1923). Compare it
-with the density gradient of the model. If the density of the model decreases
-upward faster than the adiabatic gradient, the parcel arrives denser than its
-new surroundings and sinks back. The layer is stable. If the density of the
-model decreases more slowly, or increases upward, the parcel arrives lighter
-and continues to rise. The layer is unstable. A metric for the stability would be $e$:
+$$e = 1 + \frac{\kappa}{\rho^2 g}\ \frac{d\rho}{dr},$$
 
-$$e = 1 + \frac{\kappa}{\rho^2 g}\,\frac{d\rho}{dr}.$$
-
-$e$ is one minus the Bullen parameter. A layer with $e < 0$ is stable, a layer
+where $e$ is one minus the Bullen parameter. A layer with $e < 0$ is stable, a layer
 with $e = 0$ is adiabatic, and a layer with $e > 0$ is unstable.
 
-In an elastic layer, the shear strength holds the parcel in place, and $e > 0$
-has no effect. In a layer that flows, nothing holds the parcel. A displacement
-then grows exponentially with time. This is a Rayleigh–Taylor instability, and
-its growth rate increases as the viscosity decreases. In a Love-number
-calculation it appears as a mode with a positive growth rate (even without any load, it never relaxes!), and the response
-does not relax to its fluid limit (Plag and Jüttner, 1995; Vermeersen and
-Mitrovica, 2000). Huang et al. (2023) show the same growing modes in a
-finite-element GIA model.
+In a rigid, elastic layer, shear strength holds the parcel in place, such that even when $e > 0$, the gravitational
+instability has no effect on the GIA model. In a layer that flows, however, the parcel will start to move at a rate
+controlled by the viscosity and displacement then grows exponentially with time. This phenomenon is a Rayleigh–Taylor
+instability, and its growth rate increases as the viscosity decreases. In a Love-number
+calculation, it appears as a mode with a positive growth rate. Even in the absence of any loads, it never relaxes such
+that the response does not relax to its fluid limit (Plag & Jüttner, 1995; Vermeersen & Mitrovica, 2000). The same
+growing modes also occur in numerical GIA models (e.g., Huang et al., 2023).
 
-An incompressible model has $\kappa \to \infty$. The adiabatic gradient is then
-zero, and the condition becomes simple: density must not increase upward
-(Vermeersen and Mitrovica, 2000). Incompressible models are therefore affected
-only where PREM's density increases upward. Compressible models are affected
-wherever $e > 0$.
+It is important to note that, for an incompressible GIA model where $\kappa \to \infty$, the adiabatic density gradient is
+zero and the condition becomes simple: density in the Earth model must never increase upwards. Incompressible models are therefore
+only affected where PREM's density increases upward. Compressible models, however, can have $e > 0$ even in places where PREM's
+density reduces upwards, so more care is required to ensure that the profile is gravitationally stable.
 
-### Where PREM fails
+### Where is PREM gravitationally unstable?
 
-| Depth (km) | $e$ in PREM | Density excess over the adiabat (kg/m³) |
+| Depth (km) | $e$ in PREM | Density excess over adiabatic (kg/m³) |
 |---|---|---|
-| 0 to 24.4, crust | 1 (constant density in each layer) | about 20 |
-| 24.4 to 220 | 1.13 (density increases upward) | about 190 |
-| 220 to 400 | 0.17 to 0.22 | 26 |
-| 400 to 600 | −0.98 to −0.73 (stable) | 0 |
-| 600 to 670 | 0.63 | 28 |
-| 670 to 2891 | −0.01 to 0.03 | under 9 |
+| 0–24.4 (crust) | 1 (constant density in each layer) | ~20 |
+| 24.4–220 | 1.13 (density inverted) | ~190 |
+| 220–400 | 0.17 to 0.22 | 26 |
+| 400–600 | −0.98 to −0.73 (fully stable) | 0 |
+| 600–670 | 0.63 | 28 |
+| 670–2891 | −0.01 to 0.03 | <9 |
 
-The layer between 24.4 and 220 km is the largest problem. It is unstable in
-compressible and incompressible models. The layers between 220 and 400 km and
-between 600 and 670 km affect compressible models only.
+The 24.4–220 km layer is the most significant problem, as it is unstable in both
+compressible and incompressible models and includes the asthenosphere, which is often given the lowest viscosities in GIA models
+(so instabilities develop quickly). The 400–600 km layer is always stable, while the other layers are unstable in compressible models only.
 
-GIAMIP leaves compressibility open. Groups with compressible models will see
-the instability, and groups with incompressible models will see less of it or
-none. The difference then appears in the model spread as if it were a real
-difference between the models. With the protocol viscosities the effect is
-small. At low viscosities it becomes large. In our own codes the PREM response
-at low degree misses its fluid limit by up to 3.4 per cent. A compressible
-G-ADOPT model with a weak mantle developed a flow that continued to grow.
+Since GIAMIP does not prescribe compressibility, groups with compressible models are likely to see more of these instabilities than 
+groups with incompressible models and these difference will appear in the model spread. Moreover, since some of the experiments leave the
+viscosity open, then any gravitational instabilities will develop at different rates between models. For example, in our Love number code,
+the PREM response at low degrees misses its fluid limit by up to 3.4%, while a compressible G-ADOPT finite element model with a low viscosity
+mantle developed a flow that continued to accelerate.
 
-## Description of what was changed by ANU-GADOPT team
+## The ANU-GADOPT team's approach to fixing this problem
 
-A GIA model uses density $\rho$, bulk modulus $\kappa$, shear modulus $\mu$ and
-a viscosity. Gravity follows from the density. We change only $\rho$. The
-moduli $\kappa$ and $\mu$ stay as in PREM at every depth, so the elastic
-stiffness of the model is PREM's.
+A self-gravitating GIA model generally requires inputs of density $\rho$, bulk modulus $\kappa$, shear modulus $\mu$, and viscosity. Gravitational
+acceleration $g$ can be computed self-consistently from the density. We note that some codes instead read in $V_P$ and $V_S$ and internally compute 
+the bulk and shear moduli using $\mu = \rho V_S^2$ and $\kappa = \rho V_P^2 - \tfrac{4}{3}\mu$ (PREM actually provides $V_P$ and $V_S$ rather than
+the moduli).
 
-PREM gives $V_P$ and $V_S$ instead of the moduli. The relations are
-$\mu = \rho V_S^2$ and $\kappa = \rho V_P^2 - \tfrac{4}{3}\mu$. With fixed
-moduli and a new density, both speeds change by about $-\tfrac{1}{2}\,
-\Delta\rho/\rho$. The $V_P$ and $V_S$ in `PREM-stable.csv` are these new
-speeds. This table therefore, is purely for the purposes of GIA modelling where the target is to measure the Earth's response to external load.
+In our modification, we have chosen to leave $\kappa$ and $\mu$ consistent with those in the original PREM profile (i.e., the elastic
+stiffness of the model is PREM's) and only change $\rho$ (which therefore results in small associated changes in $V_P$ and $V_S$ of
+approximately $-\tfrac{1}{2}\, \Delta\rho/\rho$). The $V_P$ and $V_S$ in `PREM-stable.csv` correspond to these revised wavespeeds. The resulting
+profile is, therefore, purely for the purposes of GIA rather than seismic modelling.
 
-Here we also note that we change the density of the crust and the whole mantle, from the surface to the
-core-mantle boundary at 2891 km. Below 670 km, PREM is close to adiabatic, with $e$ up to 0.029, and the
-change there is a few kg/m³. We still include it, because a lower mantle with a low viscosity can show
-the instability over a long run. With the correction, every layer of the crust and the mantle is stable.
-The core stays PREM.
+Our changes have modified density in the crust and throughout the whole mantle. While a purely elastic lithosphere cannot flow and so carries no 
+instabilities, the lithosphere can be very thin in some regions and so the crust and shallowest mantle structure can still be susceptible to them.
+In models that give this lid a high but finite viscosity, the lid flows slowly and a long run can show the instability. For this resason,
+we therefore include the crust and lithospheric mantle in our modification (our revised profile changes crustal density by about 10 kg/m³ and
+maintains the large density jumps at 15~km and 24.4 km). Deeper than 670 km, PREM is already close to adiabatic
+($e < 0.03$), such that the required changes in density in the lower mantle are only a few kg/m³. Instabilities at these depths in the original PREM
+are generally small and take a long time to occur for typical lower mantle viscosities (Vermeersen & Mitrovica, 2000). Nevertheless, we have decided
+to still fix them as long-duration GIA models with a low viscosity lower mantle can still produce them. The properties of the core remain the same 
+as those in the original PREM and, following our corrections, all layers of the crust and mantle are gravitationally stable.
 
-### The rule
+### Optimisation framework
 
-The density at the nodes between the surface and the core-mantle boundary is
-the solution of a least-squares problem. It is the density closest to PREM,
+Our aim is to keep density as close to the original PREM as possible and we infer density at each node between the surface and the core-mantle boundary
+as the solution of the least-squares problem
 
 $$\min \sum_i w_i \left(\rho_i - \rho_i^{\mathrm{PREM}}\right)^2,$$
 
-where $w_i$ is the mass of the shell that node $i$ represents. Three
-conditions apply.
+where $i$ represents each node and $w_i$ is the mass of the shell at that node. Three conditions are applied:
 
-1. Every interval between two nodes is stable or adiabatic:
+1. Every interval between two nodes is either stable or adiabatic:
 
    $$\frac{\rho_{i+1} - \rho_i}{r_{i+1} - r_i} + \frac{\bar\rho^2\,\bar g}{\bar\kappa} \le 0,$$
 
-   where the bar is the mean of the two nodes. This is the discrete form of
-   $e \le 0$.
-2. At every discontinuity, the density below is at least the density above.
-   An inverted jump between two flowing layers gives a mode that grows about
-   ten times faster than the same density excess spread over a layer.
-3. The mass of the crust and the mantle is PREM's. The total mass of the
-   Earth, the surface gravity and the gravity in the core therefore do not
-   change. One condition covers the whole range, so mass can move between the
-   upper and the lower mantle.
+   where the bar is the mean value across the two nodes. This is the discrete form of $e \le 0$.
+2. At every discontinuity, density in the layer below cannot be lower than that above.
+3. The total mass of the crust and the mantle is equal to those values in PREM. Therefore, Earth's total mass and gravitational acceleration at the
+   surface and within the core remain consistent. It is, however, possible for mass to move between the upper and the lower mantle.
 
-Condition 1 contains $g$, and $g$ depends on the density. We solve the problem
-in a loop. Gravity comes from the current density, the least-squares problem
-with these linear conditions gives a new density, and the loop repeats. Five
-iterations bring the density to within 2e-5 kg/m³ of its final value.
-
-### A note on the upper most layers (crust and lithosphere)
-
-A lithosphere that does not flow carries no instability, whatever its
-density. A correction below a fixed lid (elastic lithosphere or high viscosity), for example 60 km, is therefore
-enough for a 1D model with a rigid lid of at least that thickness. However, this is not
-enough for every GIAMIP model, including GADOPT. In a 3D model the lithosphere is thinner in some
-regions, and there the shallow mantle with $e = 1.13$ flows. In a model that
-gives the lid a high but finite viscosity, as G-ADOPT does, the lid flows
-slowly, and a long run can show the instability. A correction to the surface
-makes the table stable for every lid thickness and every lid viscosity.
-
-The crust is included for the same reason. Each crustal layer of PREM has a
-constant density, and in a compressible model a constant density is
-super-adiabatic ($e = 1$). The correction changes the crust by about
-10 kg/m³ and keeps the large density jumps at 15 and 24.4 km.
+Condition 1 contains $g$, which itself depends on density, so we solve the problem iteratively
+in a loop. $g$ is computed based upon the current density profile, the least-squares problem
+with these linear conditions results in a new density profile, from which a $g$ is revised and the loop repeats. Five
+iterations is sufficient to bring the density profile within 2e-5 kg/m³ of its final values.
 
 ## The result
 
-![Density of PREM, PREM-stable and VM5i](prem_density.png)
+![Density of PREM and PREM-stable](prem_density.png)
 
-*Density of PREM as published (blue), of PREM-stable (orange) and of VM5i
-(grey; Spada and Melini, 2019, Table 2). a. The crust and the mantle, 0 to
-2891 km. b. The top 700 km, where the change is largest. Where PREM and
-PREM-stable agree, the orange line lies on the blue line. VM5i averages PREM
-over 11 layers of constant density. Below 220 km its density is 0.4 to 0.8 per
-cent lower than PREM. A layer of constant density is stable only in an
-incompressible model. In a compressible model it is steeper than the adiabatic
-gradient ($e = 1$), so VM5i is not stable in a compressible code.*
+*Density of PREM as originally published (blue), in our revised PREM-stable (orange), and in VM5i (grey; Table 2 of Spada and Melini, 2019). a. The crust
+and whole mantle, 0 to 2891 km. b. Zoom of the upper 700 km, where the modifications are largest. VM5i averages PREM into 11 layers of constant density. 
+In a compressible model, it is therefore not stable.*
 
-| Depth (km) | Density change (kg/m³) |
+| Depth (km) | Range of density changes (kg/m³) |
 |---|---|
-| 0 to 24.4, crust | −9 to +10 |
-| 24.4 to 220 | −109 at 24.4 km, +81 at 220 km |
-| 220 to 400 | +4 to +32 |
-| 400 to 600 | +0.3, and down to −12 between 590 and 600 km |
-| 600 to 670 | −12 to +16 |
-| 670 to 771 | −7 to −5 |
-| 771 to 2741 | −5 to +3 |
-| 2741 to 2891, D'' | +2 to +2.5 |
+| 0–24.4 (crust) | −9 to +10 |
+| 24.4–220 | −109 at 24.4 km, +81 at 220 km |
+| 220–400 | +4 to +32 |
+| 400–600 | -12 to +0.3 |
+| 600–670 | −12 to +16 |
+| 670–771 | −7 to −5 |
+| 771–2741 | −5 to +3 |
+| 2741–2891 (D'') | +2 to +2.5 |
 
-The largest $e$ in the crust and the mantle is 2e-9. In PREM it is 1.13.
-The density jump at 220 km becomes zero, the jump at 400 km decreases from
-180 to 149 kg/m³, and the jump at 670 km decreases from 389 to 366 kg/m³. The
-lid between 24.4 and 80 km becomes 1.7 to 3.2 per cent lighter. Between about
-2350 and 2891 km, PREM is already stable, with $e$ down to −0.011. There the
-correction gives the adiabatic gradient, $e = 0$, which is the stable density
-closest to PREM after the change above it. The total mass and the surface
-gravity are PREM's. Gravity changes by at most 5.5e-3 m/s², at about 140 km
-depth. $V_P$ and $V_S$ change by −1.2 to +1.7 per cent.
+The largest $e$ remaining anywhere in the crust and mantle is 2e-9.
+The density increase across the 220 km discontinuity becomes zero, the jump at 400 km reduces from
++180 to +149 kg/m³, and the jump at 670 km reduces from +389 to +366 kg/m³. The lithospheric mantle
+layer between 24.4 and 80 km becomes 1.7–3.2% lighter. $g$ changes by a maximum of 0.0055 m/s², which occurs at about 140 km
+depth. $V_P$ and $V_S$ change by between −1.2 and +1.7%.
 
 ## How to use the files
 
-`PREM.csv` is PREM as published, with the ocean replaced by the upper crust.
-`PREM-stable.csv` is the stable model. The two files have the same 339 nodes,
-so they can be compared row by row.
+`PREM.csv` is almost exactly the same as the original published version except that the 2 km thick ocean layer has been replaced with upper crust.
+`PREM-stable.csv` is our revised, gravitationally stable model. The two files contain the same 339 depth nodes, so can be compared row by row.
 
 | Column | Quantity | Unit |
 |---|---|---|
@@ -190,27 +166,23 @@ so they can be compared row by row.
 | `vs_m_s` | S-wave speed | m/s |
 | `kappa_Pa` | bulk modulus | Pa |
 | `mu_Pa` | shear modulus | Pa |
-| `g_m_s2` | gravity | m/s² |
+| `g_m_s2` | gravitational acceleration | m/s² |
 
-- The rows go from the centre to the surface.
-- Every boundary between PREM regions has two rows with the same radius. The
-  first row is the side below the boundary, the second row is the side above.
-  Some of these boundaries have no density jump, and there the two rows are
+- Rows go from Earth's centre to its surface.
+- Every boundary between original PREM regions is represented with two rows with the same radius. The
+  first row is the value below the boundary and the second row is above.
+  Some of these boundaries have no density jump in our modified profile, resulting in the two rows being
   equal.
-- The nodes are at most 10 km apart from the surface to the core-mantle
-  boundary, and at most 100 km apart in the core.
-- Between the surface and the core-mantle boundary, interpolate the density
-  linearly between nodes. The gravity column is exact for that density. If your code computes
-  gravity from the density with the trapezoid rule, the result differs from
-  the column by at most 3e-5 of its value.
-- Use $\kappa$ and $\mu$ from the file. If you read $V_P$ and $V_S$, read them
-  from the same file as the density. Do not combine the density of
-  `PREM-stable.csv` with the $V_P$ and $V_S$ of another PREM table. That
-  combination gives moduli that are not PREM's.
-- An incompressible model uses $\rho$ and $\mu$ only. The density of
-  `PREM-stable.csv` increases with depth everywhere, so it is stable for an
-  incompressible model as well.
-- The files contain no viscosity and no attenuation.
+- Nodes are spaced at most 10 km apart between the surface and core-mantle
+  boundary, and at most 100 km apart within the core.
+- Between the surface and core-mantle boundary, the density should be interpolated
+  linearly between nodes (the gravitational acceleration column is computed assuming this density interpolation). If your code computes
+  $g$ from density using the trapezoid rule, the result will differ from our column by at most 3e-5 of its value.
+- Use pur $\kappa$ and $\mu$ (consistent with original PREM). If you read $V_P$ and $V_S$, read them
+  from the our file too (different to original PREM). Do not combine the density of
+  `PREM-stable.csv` with the $V_P$ and $V_S$ of another PREM profile as that
+  combination gives elastic moduli that are not consistent with the original PREM.
+- Our profiles do not include viscosity and attenuation.
 
 
 ## References
@@ -226,10 +198,9 @@ compressible earth models. *Geophysical Journal International* 235, 2231–2256.
 Plag, H.-P. and Jüttner, H.-U. (1995). Rayleigh–Taylor instabilities of a
 self-gravitating Earth. *Journal of Geodynamics* 20, 267–288.
 
-Spada, G. and Melini, D. (2019). SELEN4 (SELEN version 4.0): a Fortran program
-for solving the gravitationally and topographically self-consistent sea-level
-equation in glacial isostatic adjustment modeling. *Geoscientific Model
-Development* 12, 5055–5075. https://doi.org/10.5194/gmd-12-5055-2019
+Spada, G. and Melini, D. (2019). SELEN4 (SELEN version 4.0): a Fortran program for
+solving the gravitationally and topographically self-consistent sea-level equation
+in glacial isostatic adjustment modeling. Geoscientific Model Development 12, 5055–5075.
 
 Vermeersen, L. L. A. and Mitrovica, J. X. (2000). Gravitational stability of
 spherical self-gravitating relaxation models. *Geophysical Journal
