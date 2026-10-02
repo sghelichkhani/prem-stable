@@ -87,7 +87,7 @@ PREM gives $V_P$ and $V_S$ instead of the moduli. The relations are
 $\mu = \rho V_S^2$ and $\kappa = \rho V_P^2 - \tfrac{4}{3}\mu$. With fixed
 moduli and a new density, both speeds change by about $-\tfrac{1}{2}\,
 \Delta\rho/\rho$. The $V_P$ and $V_S$ in `PREM-stable.csv` are these new
-speeds. This table therefore, is purely for the purposes of GIA modelling where the target is for measure the Earth's response to external load.
+speeds. This table therefore, is purely for the purposes of GIA modelling where the target is to measure the Earth's response to external load.
 
 Here we also note that we change the density of the crust and the whole mantle, from the surface to the
 core-mantle boundary at 2891 km. Below 670 km, PREM is close to adiabatic, with $e$ up to 0.029, and the
@@ -129,7 +129,7 @@ iterations bring the density to within 2e-5 kg/m³ of its final value.
 A lithosphere that does not flow carries no instability, whatever its
 density. A correction below a fixed lid (elastic lithosphere or high viscosity), for example 60 km, is therefore
 enough for a 1D model with a rigid lid of at least that thickness. However, this is not
-enough for every GIAMIP model, inclding GADOPT. In a 3D model the lithosphere is thinner in some
+enough for every GIAMIP model, including GADOPT. In a 3D model the lithosphere is thinner in some
 regions, and there the shallow mantle with $e = 1.13$ flows. In a model that
 gives the lid a high but finite viscosity, as G-ADOPT does, the lid flows
 slowly, and a long run can show the instability. A correction to the surface
