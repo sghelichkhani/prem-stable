@@ -4,7 +4,7 @@ Starting point
 --------------
 PREM of Dziewonski and Anderson (1981), Table I, evaluated in `prem1981.py`:
 isotropic wave speeds from the footnote of the table, the ocean replaced by the
-upper crust, reference period 1 s. `check_prem1981.py` checks the transcription.
+upper crust, reference period 1 s.
 
 The node table
 --------------
@@ -13,8 +13,8 @@ surface to the core-mantle boundary and at most 100 km apart in the core. The
 spacing inside a region is the region thickness divided by the smallest number
 of intervals that keeps it at or below that limit, so a node falls on every
 region boundary. Every region boundary is written twice, once for each side,
-with the lower side first. This is the convention of lovejx: a duplicated
-radius is a declared interface. Some region boundaries (80 km, 600 km, 771 km,
+with the lower side first. A duplicated radius therefore marks a
+discontinuity, as in the model files of most Love-number codes. Some region boundaries (80 km, 600 km, 771 km,
 2741 km) have no density jump in PREM, and the two rows there are equal.
 
 What is changed
@@ -32,7 +32,7 @@ fluid without shear strength, and GIA codes treat it separately.
 The range includes the lithosphere and the crust. A table that is stable only
 below a rigid lid is stable only for models whose lid is at least that thick,
 and the GIAMIP models and the G-ADOPT models with a finite lid viscosity do not
-all satisfy this. The reasons are in `DECISIONS.md`.
+all satisfy this. `METHOD.md` gives the reasons.
 
 Inside the range the stable density is taken as linear between nodes. This is
 the model that the file describes, and the mass and gravity below are computed
@@ -47,9 +47,9 @@ least-squares sense, subject to:
 1. Stability. In every interval of the range the gradient is at most the
    adiabatic one, d rho/dr + rho_m^2 g_m / kappa_m <= 0, where the subscript m
    is the mean of the two end nodes, kappa is PREM's and g comes from the new
-   density. This is the discrete measure that lovejx applies
-   (`lovejx.lovenumbers.stratification.interval_measure`), so the check passes
-   on the table exactly as it is written.
+   density. A code that holds the properties constant across each interval
+   at the mean of its two nodes sees exactly this measure, so the condition
+   holds on the table exactly as it is written.
 2. No inverted discontinuity: at every region boundary in the range the density
    below is at least the density above. At the core-mantle boundary the core,
    which is PREM, must be at least as dense as the base of the mantle. With
@@ -75,8 +75,7 @@ Output
 `PREM.csv` and `PREM-stable.csv`, on the same nodes, from the centre outward,
 in SI units. Columns: radius (m), depth (km), region (index into
 `prem1981.REGIONS`), density (kg/m^3), V_P and V_S (m/s), bulk and shear
-modulus (Pa), gravity (m/s^2). lovejx's legacy decks carry radius, density,
-V_P, V_S and gravity in the same units, so these columns convert directly.
+modulus (Pa), gravity (m/s^2).
 """
 
 from __future__ import annotations
@@ -209,7 +208,7 @@ def gravity(r, shells):
 
 def stability_e(r, rho, kappa, g, mask):
     """e = 1 - Bullen parameter per interval whose two nodes are both in `mask`
-    and that has finite width, on interval means as lovejx computes it.
+    and that has finite width, on interval means (the mean of the two nodes).
 
     Returns the interval index and e. e > 0 is super-adiabatic (unstable where
     the material flows), e = 0 is the adiabatic gradient.

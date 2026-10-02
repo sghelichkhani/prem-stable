@@ -123,6 +123,7 @@ Condition 1 contains $g$, and $g$ depends on the density. We solve the problem
 in a loop. Gravity comes from the current density, the least-squares problem
 with these linear conditions gives a new density, and the loop repeats. Five
 iterations bring the density to within 2e-5 kg/m³ of its final value.
+
 ### A note on the upper most layers (crust and lithosphere)
 
 A lithosphere that does not flow carries no instability, whatever its

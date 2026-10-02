@@ -2,11 +2,8 @@
 *.npz
 *.npy
 *.png
-# METHOD.md shows prem_density.png. prem_stable_fit.png shows e and the
-# density adjustment for DECISIONS.md. Git tracks both.
+# METHOD.md shows this figure, so git tracks it.
 !prem_density.png
-!prem_stable_fit.png
-!sources/*.png
 __pycache__/
 # Published papers and the scan of Table I: kept here, not redistributed.
 sources/

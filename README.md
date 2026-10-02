@@ -1,65 +1,74 @@
 # A gravitationally stable PREM for GIA models
 
-This directory builds a version of PREM whose density is stable in the flowing
-mantle. The target is the GIA Model Intercomparison Project (GIAMIP), which
-prescribes PREM as the elastic structure but gives no PREM file.
+This repository gives two Earth models for the GIA Model Intercomparison
+Project (GIAMIP). `PREM.csv` is PREM. `PREM-stable.csv` is PREM with a density
+that is gravitationally stable in every layer of the crust and the mantle.
+`METHOD.md` explains why PREM needs this change, how the change is made, and
+how to use the files.
 
-## The problem
+## Source of PREM
 
-In PREM as published, density increases upward between the Moho and 220 km
-depth. PREM is also steeper than the adiabatic gradient between 220 and 400 km
-and between 600 and 670 km. In a compressible viscoelastic model, a layer like
-that is gravitationally unstable where it flows. It carries Rayleigh-Taylor
-modes that grow with time. An incompressible model is unstable only where the
-density increases upward, which in PREM is the layer between 24.4 and 220 km.
-`METHOD.md` explains the condition, the correction and the files.
+The source is Table I of Dziewonski and Anderson (1981). `prem1981.py` holds
+the polynomial coefficients of that table, typed from the printed paper. No
+other PREM table is used. Two choices differ from the table as printed:
 
-The evidence:
+- Between 24.4 and 220 km depth, PREM is transversely isotropic. The files use
+  the isotropic speeds from the footnote of Table I,
+  V_P = 4.1875 + 3.9382x and V_S = 2.1519 + 2.3481x, with x = r / 6371 km.
+- The 3 km ocean layer is replaced by the upper crust (2600 kg/m³, 5.8 km/s,
+  3.2 km/s) up to the surface. A GIA model applies the ocean as a load, so the
+  Earth model has no fluid layer at the top.
 
-- Vermeersen and Mitrovica (2000), `sources/vermeersen-mitrovica-2000.pdf`.
-- Huang et al. (2023), `sources/huang-et-al-2023.pdf`, Section 5.
-- lovejx, `~/Workplace/lovejx/NOTES/STRATIFICATION.md`. It measures the growing
-  mode of PREM in the Love numbers and explains the 1 to 4 per cent low-degree
-  error of the legacy Fortran.
-- G-ADOPT runs by Will Scott, February 2026. A compressible model with a
-  layered density and a weak mantle developed a growing flow. The same model
-  with a density that increases smoothly with depth relaxed to equilibrium.
+The values are for the reference period of 1 s. The files contain no
+attenuation and no viscosity.
 
-## The files
+## Files
 
-| File | Purpose |
+| File | Content |
 |---|---|
-| `prem1981.py` | PREM from the polynomials of Dziewonski and Anderson (1981), Table I |
-| `check_prem1981.py` | Checks the transcription against ObsPy's `prem.nd` and the lovejx deck |
-| `build_prem_stable.py` | Fits the stable density and writes `PREM.csv` and `PREM-stable.csv` |
-| `PREM.csv` | PREM on the output node table, centre outward, SI units |
-| `PREM-stable.csv` | The stable PREM on the same nodes |
-| `plot_density.py` | Plots the density of PREM and PREM-stable, `prem_density.png`. The figure in `METHOD.md` |
-| `plot_fit.py` | Plots e and the density adjustment of the two CSV files, `prem_stable_fit.png` |
-| `plot_prem_stable.py` | Plots the older lovejx PREM-stable against `prem.nd`, `prem_vs_prem_stable.png` |
-| `METHOD.md` | Why and how PREM is changed, and how to use the files. For the GIAMIP groups |
-| `DECISIONS.md` | Every decision, with the date, the reason and the numbers |
-| `sources/` | The scan of Table I and the two papers. Not tracked by git |
-| `rejected/` | Two rules we tested and did not keep |
-| `email/` | The message to Holly Han about PREM |
+| `PREM.csv` | PREM from the Table I polynomials |
+| `PREM-stable.csv` | The stable model, on the same nodes as `PREM.csv` |
+| `METHOD.md` | The reasons, the method, the result and the column format |
+| `prem_density.png` | The density of the two models |
+| `prem1981.py` | The Table I coefficients and a function that evaluates them |
+| `build_prem_stable.py` | Calculates the stable density and writes both CSV files |
+| `plot_density.py` | Plots `prem_density.png` |
 
-## How to rebuild
+## Design decisions
 
-Use the project Python, `~/Workplace/python3.12/bin/python3.12`. Run the
-commands from this directory.
+- Only the density changes. The bulk and shear moduli stay as in PREM, so the
+  elastic stiffness of the model is PREM's. V_P and V_S are calculated again
+  from the moduli and the new density. The table is for GIA and not for
+  seismology.
+- The change covers the crust and the whole mantle, from the surface to the
+  core-mantle boundary. A table that is stable from the surface down is stable
+  for every lithosphere thickness and every lithosphere viscosity. The core
+  stays PREM.
+- The new density is the density closest to PREM, in a mass-weighted
+  least-squares sense, that has no layer steeper than the adiabatic gradient
+  and no density jump that increases upward. The mass of the crust and the
+  mantle stays PREM's, so the total mass and the surface gravity do not change.
+- The nodes are at most 10 km apart from the surface to the core-mantle
+  boundary and at most 100 km apart in the core. Each boundary between PREM
+  regions has two rows at the same radius. The fit is done on these nodes, so
+  the stability condition holds for the file as it is written.
 
-1. Run `check_prem1981.py`. Every density misfit against the lovejx deck must
-   be below 1e-5 g/cm^3.
-2. Run `build_prem_stable.py`. It takes about 2 seconds. It prints the density
-   change, the stability measure, the mass and the jumps.
-3. Run `plot_density.py` and `plot_fit.py`.
+## Build the files
 
-`check_prem1981.py` needs ObsPy and a checkout of lovejx at
-`~/Workplace/lovejx`. The build needs only NumPy and SciPy.
+The scripts need Python 3, NumPy, SciPy and Matplotlib. Run them from this
+directory:
 
-## Status
+```
+python build_prem_stable.py
+python plot_density.py
+```
 
-PREM-stable.csv is stable from the surface to the core-mantle boundary. The
-core is PREM. The columns are radius_m, depth_km, region, rho_kg_m3, vp_m_s, vs_m_s,
-kappa_Pa, mu_Pa and g_m_s2. Every region boundary has two rows at one radius,
-the lower side first. `DECISIONS.md` lists the open items.
+`build_prem_stable.py` takes a few seconds. It prints the density change, the
+stability measure, the total mass, the surface gravity and the density jumps,
+and it writes `PREM.csv` and `PREM-stable.csv`. `plot_density.py` writes
+`prem_density.png`.
+
+## Reference
+
+Dziewonski, A. M. and Anderson, D. L. (1981). Preliminary reference Earth
+model. *Physics of the Earth and Planetary Interiors* 25, 297–356.

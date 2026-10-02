@@ -2,13 +2,10 @@
 
 Source: Dziewonski, A. M. and Anderson, D. L. (1981). Preliminary reference
 Earth model. Physics of the Earth and Planetary Interiors 25(4), 297-356,
-Table I, transcribed from a scan of the printed table
-(`sources/dziewonski-anderson-1981-table1.png`, 2026-09-30).
+Table I, transcribed from the printed table.
 
-Every coefficient below is typed from that table and nothing else. The module
-`check_prem1981.py` compares the result with the TauP table `prem.nd` that
-ObsPy ships, which was produced independently; agreement to the rounding of
-`prem.nd` at every node is the test that no coefficient was mistyped.
+Every coefficient below is typed from that table and nothing else. To check a
+coefficient, compare it with Table I of the paper.
 
 Conventions of the table:
 
@@ -26,8 +23,7 @@ Two choices are made here, both stated in the table or its footnote:
   isotropic and needs no approximation.
 - No ocean. The 3 km ocean (6368 to 6371 km) is replaced by the upper crust,
   2.6 g/cm^3, 5.8 and 3.2 km/s, extended to the surface. A GIA model loads the
-  ocean explicitly, so a fluid layer in the Earth model is not wanted. This is
-  also what `prem.nd` does.
+  ocean explicitly, so a fluid layer in the Earth model is not wanted.
 """
 
 from __future__ import annotations
@@ -124,32 +120,3 @@ def region_of(r_km: float, side: str = "below") -> int:
     if r_km == A_KM:
         return len(REGIONS) - 1
     raise ValueError(r_km)
-
-
-# The transversely isotropic coefficients of the LID and the LVZ, Table I, for
-# the check in check_prem1981.py only. The model above uses the footnote's
-# isotropic speeds. Keys: VPV, VPH, VSV, VSH (km/s) and eta (dimensionless),
-# each (c0, c1) of c0 + c1 x. The LID and the LVZ share these coefficients.
-TI_LID_LVZ = {
-    "vpv": (0.8317, 7.2180),
-    "vph": (3.5908, 4.6172),
-    "vsv": (5.8582, -1.4678),
-    "vsh": (-1.0839, 5.7176),
-    "eta": (3.3687, -2.4778),
-}
-
-
-def voigt_isotropic(r_km):
-    """Voigt-average isotropic V_P and V_S (km/s) of the LID/LVZ at radii r_km.
-
-    With A = rho V_PH^2, C = rho V_PV^2, L = rho V_SV^2, N = rho V_SH^2 and
-    F = eta (A - 2L), the Voigt averages are K = (4A + C + 4F - 4N) / 9 and
-    G = (A + C - 2F + 5N + 6L) / 15. Density cancels from the speeds.
-    """
-    x = np.asarray(r_km, dtype=float) / A_KM
-    c = {k: v[0] + v[1] * x for k, v in TI_LID_LVZ.items()}
-    a, cc, l, n = c["vph"]**2, c["vpv"]**2, c["vsv"]**2, c["vsh"]**2
-    f = c["eta"] * (a - 2.0 * l)
-    k = (4.0 * a + cc + 4.0 * f - 4.0 * n) / 9.0
-    g = (a + cc - 2.0 * f + 5.0 * n + 6.0 * l) / 15.0
-    return np.sqrt(k + 4.0 * g / 3.0), np.sqrt(g)

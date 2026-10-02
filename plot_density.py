@@ -20,9 +20,14 @@ import pathlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-from plot_prem_stable import style, C_PREM, C_STABLE, INK
 
 HERE = pathlib.Path(__file__).resolve().parent
+
+# Colours: the first two categorical slots of the dataviz reference palette,
+# checked for colour-blind separation and contrast against a light background.
+C_PREM = "#2a78d6"      # blue, PREM as published
+C_STABLE = "#eb6834"    # orange, PREM-stable
+INK, MUTED, GRID = "#1f1f1e", "#6b6a64", "#e4e3dc"
 CMB_KM = 2891.0         # core-mantle boundary
 ZOOM_KM = 700.0         # depth range of the right panel
 
@@ -30,6 +35,17 @@ ZOOM_KM = 700.0         # depth range of the right panel
 def read(name):
     """Read one of the CSV models as a structured array, centre outward."""
     return np.genfromtxt(HERE / name, delimiter=",", names=True)
+
+
+def style(ax):
+    """Light grid, muted spines, so the two density profiles stand out."""
+    ax.grid(True, color=GRID, linewidth=0.8)
+    ax.set_axisbelow(True)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    for side in ("left", "bottom"):
+        ax.spines[side].set_color(MUTED)
+    ax.tick_params(colors=MUTED, labelcolor=INK)
 
 
 def main():
